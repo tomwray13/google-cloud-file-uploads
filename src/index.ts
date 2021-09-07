@@ -2,7 +2,7 @@ import { createServer } from "http";
 import express from "express";
 import { ApolloServer, gql, UserInputError } from "apollo-server-express";
 import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload'
-import { checkFileSize, generateUniqueFilename } from './libs/files'
+import { checkFileSize, generateUniqueFilename, uploadToGoogleCloud } from './libs/files'
 import { FileArgs } from './libs/files/types'
 
 const startServer = async () => {
@@ -47,7 +47,14 @@ const startServer = async () => {
         // generate a scrubbed unique filename
         const uniqueFilename = generateUniqueFilename(filename)
 
-        return uniqueFilename
+        // upload to Google Cloud Storage
+        try {
+          await uploadToGoogleCloud(createReadStream, uniqueFilename)
+        } catch (err) {
+          throw new UserInputError('Error with uploading to Google Cloud');
+        }
+
+        return `https://storage.googleapis.com/${process.env.GCP_BUCKET_ID}/${uniqueFilename}`
       }
     }
   };

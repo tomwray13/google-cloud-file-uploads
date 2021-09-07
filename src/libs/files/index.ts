@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import { FileUpload } from "graphql-upload"
 import { v4 as uuid } from 'uuid';
+import { bucket } from './config'
 
 // function to check if the size of the file is permitted
 export const checkFileSize = (createReadStream: FileUpload["createReadStream"], maxSize: number) => 
@@ -29,3 +30,16 @@ export const generateUniqueFilename = (filename: string): string => {
   // step 3 - return the unique filename
   return `${unique}-${trimmedFilename}`
 }
+
+export const uploadToGoogleCloud = (createReadStream: FileUpload["createReadStream"], filename: string): Promise<void> => {
+  // step 1 - upload the file to Google Cloud Storage
+  return new Promise((resolves, rejects) => 
+    createReadStream()
+      .pipe(bucket.file(filename).createWriteStream({
+        resumable: false,
+        gzip: true
+      }))
+      .on('error', (err: any) => rejects(err)) // reject on error
+      .on('finish', resolves)) // resolve on finish
+}
+

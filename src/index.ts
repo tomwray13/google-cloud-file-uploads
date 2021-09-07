@@ -2,7 +2,7 @@ import { createServer } from "http";
 import express from "express";
 import { ApolloServer, gql, UserInputError } from "apollo-server-express";
 import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload'
-import { checkFileSize } from './libs/files'
+import { checkFileSize, generateUniqueFilename } from './libs/files'
 import { FileArgs } from './libs/files/types'
 
 const startServer = async () => {
@@ -44,7 +44,10 @@ const startServer = async () => {
           }
         }
 
-        return `file size passed`
+        // generate a scrubbed unique filename
+        const uniqueFilename = generateUniqueFilename(filename)
+
+        return uniqueFilename
       }
     }
   };

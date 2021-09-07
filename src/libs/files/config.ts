@@ -1,4 +1,5 @@
 import { Storage } from '@google-cloud/storage'
+require('dotenv').config()
 
 const storage = new Storage({
   projectId: process.env.GCP_PROJECT_ID,

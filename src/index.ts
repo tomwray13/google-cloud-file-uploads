@@ -4,6 +4,7 @@ import { ApolloServer, gql, UserInputError } from "apollo-server-express";
 import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload'
 import { checkFileSize, generateUniqueFilename, uploadToGoogleCloud } from './libs/files'
 import { FileArgs } from './libs/files/types'
+require('dotenv').config()
 
 const startServer = async () => {
   const app = express();
